@@ -30,13 +30,16 @@ Chỉ nạp đúng module cần thiết cho phase hiện tại để giảm toke
 ## State machine tối thiểu
 
 ```text
-INTAKE -> RECON -> PLAN -> IMPLEMENT -> VERIFY -> REVIEW -> DONE
-                         ^       |
-                         |       v
-                         +--- DIAGNOSE
+INTAKE -> RECON -> DESIGN -> PLAN -> IMPLEMENT -> VERIFY -> REVIEW -> DONE
+                       ^              |
+                       |              v
+                       +-------- DIAGNOSE
 ```
 
 Không cho phép `IMPLEMENT -> DONE` đối với behavioral change.
+DESIGN phase: chỉ dùng cho architectural task (module mới, feature lớn, refactor lớn).
+Bounded task: skip DESIGN → đi thẳng RECON -> PLAN.
+Spike: skip DESIGN + PLAN → RECON -> report.
 Sau bất kỳ edit nào, verification liên quan phải được chạy lại trước `DONE`.
 
 ## Chính sách nạp module
@@ -81,6 +84,21 @@ Một task có thể nạp nhiều domain module nếu thật sự giao nhau.
 | Refactor, diff lớn, nguy cơ regression/boundary case | `protocols/regression-guard.md` |
 | Model yếu, harness, hard gate, escalation | `protocols/model-escalation.md` |
 
+## Superpowers Design Router
+
+Khi task thuộc loại **architectural** (module mới, feature lớn, refactor lớn),
+gọi skill superpowers để design trước khi plan. KHÔNG copy nội dung — chỉ gọi skill_view().
+
+| Tình huống | Action |
+|---|---|
+| Task mới, chưa có design/spec | `skill_view("brainstorming")` |
+| Có spec, cần implementation plan | `skill_view("writing-plans")` |
+| Sửa bug, cần root cause trước | `skill_view("systematic-debugging")` |
+| Viết test cho feature/bugfix | `skill_view("test-driven-development")` |
+| Sắp claim done, cần verify | `skill_view("verification-before-completion")` |
+
+**Quy tắc:** Khi skill superpowers được gọi, follow đúng skill đó. Khi xong, quay lại fucking-cheap state machine.
+
 ## Lazy-loading bắt buộc
 
 Không đọc tất cả module "để cho chắc". Chỉ đọc module khi một trong các điều kiện sau đúng:
@@ -112,6 +130,39 @@ VERIFICATION_REQUIRED:
 Không cần in ledger cho user trừ khi hữu ích; mục đích chính là chống drift.
 
 ## Routing examples
+
+### Architecture task (module mới / feature lớn)
+
+```text
+1. skill_view("brainstorming") → classify → design → spec
+2. skill_view("writing-plans") → spec → implementation plan
+3. core/workflow.md + core/constraints.md
+4. Implement theo plan
+5. skill_view("test-driven-development") khi viết test
+6. skill_view("verification-before-completion") trước DONE
+7. skill_view("systematic-debugging") nếu test fail
+```
+
+### Bounded task (fix bug nhỏ, thêm field, thay đổi đơn giản)
+
+```text
+core/workflow.md
+core/constraints.md
+core/verification.md
+domains/<domain>.md
+core/completion-gate.md
+```
+
+Bỏ qua DESIGN phase. Không cần brainstorming hay writing-plans.
+
+### Spike (throwaway experiment)
+
+```text
+core/workflow.md
+core/evidence.md
+```
+
+Report findings. Không commit, không implement.
 
 ### Coding task mới (vibecoding)
 
