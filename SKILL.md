@@ -83,6 +83,7 @@ Một task có thể nạp nhiều domain module nếu thật sự giao nhau.
 | Git, dirty workspace, reset/revert/commit | `protocols/git-safety.md` |
 | Refactor, diff lớn, nguy cơ regression/boundary case | `protocols/regression-guard.md` |
 | Model yếu, harness, hard gate, escalation | `protocols/model-escalation.md` |
+| UI/Playwright test involved, verify method thay đổi | `protocols/verification-integrity.md` |
 
 ## Superpowers Design Router
 
@@ -185,6 +186,7 @@ core/constraints.md
 core/verification.md
 domains/frontend.md
 core/completion-gate.md
+protocols/verification-integrity.md
 ```
 
 Nếu test fail hai lần với cùng fingerprint, đọc thêm `core/failure-recovery.md` và `protocols/anti-loop.md`.
