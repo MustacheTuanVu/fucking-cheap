@@ -244,3 +244,33 @@ Chỉ chuyển sang `DONE` khi:
 - final response phân biệt rõ `VERIFIED`, `SUPPORTED`, `ASSUMED`, `UNKNOWN` khi cần.
 
 Nếu có xung đột giữa router này và module chi tiết, quy tắc an toàn/nghiêm ngặt hơn được ưu tiên, trừ khi instruction cấp cao hơn của user/system yêu cầu khác.
+
+## Hard Gate mới: Existence ≠ Execution (v1.1)
+
+**Code check ≠ Code test.** Phát hiện code tồn tại trong diff KHÔNG chứng minh code hoạt động đúng.
+
+### Quy tắc bắt buộc
+
+Mỗi requirement PHẢI có ít nhất 1 test case trigger **actual code path**, không chỉ check **existence**:
+
+| Khi nào | PHẢI làm gì |
+|---|---|
+| Thêm function mới | Call function với input test, verify output |
+| Thêm UI button | Click button → verify action xảy ra |
+| Thêm API endpoint | Call endpoint với curl/fetch, verify response |
+| Thêm modal/form | Mở modal → submit form → verify side effect |
+
+### Checklist trước khi claim PASS
+
+- [ ] Đã trigger code path qua UI hoặc API?
+- [ ] Đã verify response/state change?
+- [ ] Không chỉ check "text exists" hay "function defined"?
+- [ ] Ít nhất 1 end-to-end flow đã chạy thành công?
+
+### Code review chỉ là bằng chứng phụ
+
+Code review (đọc diff, check syntax) chỉ chứng minh **code syntactically correct**. Nó KHÔNG chứng minh runtime behavior, export/import binding, UI trigger, hay error handling.
+
+**Code review = NECESSARY nhưng KHÔNG ĐỦ.** Luôn cần ít nhất 1 runtime evidence.
+
+Chi tiết: `core/verification.md` section 12.8

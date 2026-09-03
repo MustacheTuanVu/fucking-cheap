@@ -159,3 +159,51 @@ Dùng bảng như guidance, không dùng nó làm lý do để chạy command kh
 | CI/build | reproduce failing job local khi có thể | validate matrix/platform assumptions |
 
 ---
+
+## 12.8 ⚠️ HARD GATE: Existence ≠ Execution
+
+**Code check ≠ Code test.** Phát hiện code tồn tại trong diff KHÔNG chứng minh code hoạt động đúng.
+
+### Cách mắc sai
+
+```text
+❌ 'updateRemittanceVoucher có trong diff → PASS'
+❌ 'Text "Upload" tồn tại trên page → PASS'
+❌ 'Function được import trong file → PASS'
+```
+
+### Cách đúng
+
+```text
+✅ Trigger function qua UI/API endpoint → response đúng
+✅ Click button → verify action xảy ra (state change, toast, modal, redirect)
+✅ Call API endpoint → verify status code + response body
+```
+
+### Quy tắc bắt buộc
+
+Mỗi requirement PHẢI có ít nhất 1 test case trigger **actual code path**, không chỉ check **existence**:
+
+| Khi nào | PHẢI làm gì |
+|---|---|
+| Thêm function mới | Call function với input test, verify output |
+| Thêm UI button | Click button → verify action xảy ra |
+| Thêm API endpoint | Call endpoint với curl/fetch, verify response |
+| Thêm modal/form | Mở modal → submit form → verify side effect |
+
+### Code review chỉ là bằng chứng phụ
+
+Code review (đọc diff, check syntax) chỉ chứng minh **code syntactically correct**. Nó KHÔNG chứng minh:
+- Runtime behavior đúng
+- Export/import binding hoạt động
+- UI trigger function đúng cách
+- Error handling hoạt động
+
+**Code review = NECESSARY nhưng KHÔNG ĐỦ.** Luôn cần ít nhất 1 runtime evidence.
+
+### Checklist trước khi claim PASS
+
+- [ ] Đã trigger code path qua UI hoặc API?
+- [ ] Đã verify response/state change?
+- [ ] Không chỉ check "text exists" hay "function defined"?
+- [ ] Ít nhất 1 end-to-end flow đã chạy thành công?
