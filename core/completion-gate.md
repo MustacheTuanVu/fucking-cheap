@@ -27,6 +27,15 @@ Agent chỉ được vào `DONE` sau khi đánh giá mọi gate áp dụng.
 - Failure được investigate thay vì che giấu.
 - Check chưa chạy được phải được nêu rõ nếu có ý nghĩa.
 
+## Gate D+ — Verification Integrity
+
+- Không có verification method nào bị downgrade so với plan đã approve.
+- Nếu Playwright/E2E test bị remove/disabled, có explicit justification + user acknowledgment.
+- Replacement test cover cùng acceptance criteria ở cùng layer (UI→UI test, API→API test).
+- Cross-layer substitution chỉ xảy ra khi infra客观 không khả dụng.
+- Mọi changed method có logged reason theo protocols/verification-integrity.md.
+- **Dual-layer:** Task có UI + API component PHẢI có cả UI test VÀ API test. Thiếu 1 trong 2 = BLOCK.
+
 ## Gate E — Regression review
 
 - Final diff đã được inspect.
